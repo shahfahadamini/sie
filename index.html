@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Link Converter - All in One</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to bottom right, #1a1a1a, #0a0a0a);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #e41e3f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        h1 span {
+            color: #e41e3f;
+        }
+        
+        .subtitle {
+            color: #ccc;
+            font-size: 16px;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .step-number.active {
+            background-color: #e41e3f;
+            color: white;
+        }
+        
+        .step-number.completed {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .step-number.inactive {
+            background-color: #333;
+            color: #666;
+        }
+        
+        .step-text {
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .card {
+            background-color: #222;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: #333;
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #e41e3f;
+        }
+        
+        .file-upload-area {
+            border: 3px dashed #444;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #333;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #e41e3f;
+            background-color: #2a2a2a;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #e41e3f;
+            background-color: #2a2a2a;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .upload-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .image-preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .preview-img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .image-info {
+            margin-top: 10px;
+            color: #4caf50;
+            font-size: 14px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #e41e3f, #c01835);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(228, 30, 63, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(228, 30, 63, 0.4);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #666, #555);
+            box-shadow: 0 4px 15px rgba(102, 102, 102, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(102, 102, 102, 0.4);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-card {
+            background: linear-gradient(45deg, #1e3a1e, #2e5a2e);
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+        
+        .result-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #4caf50;
+        }
+        
+        .link-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .generated-link {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #333;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            color: white;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .copy-btn {
+            padding: 15px 20px;
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .preview-section {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        
+        .facebook-preview {
+            background-color: #fff;
+            color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .facebook-preview img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .facebook-preview-content {
+            padding: 15px;
+        }
+        
+        .facebook-preview-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1877f2;
+        }
+        
+        .facebook-preview-description {
+            color: #65676b;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .facebook-preview-url {
+            color: #65676b;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #333;
+            border-radius: 15px;
+            border-left: 5px solid #e41e3f;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 15px;
+            color: #e41e3f;
+            font-size: 20px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .warning-title {
+            color: #ffc107;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .steps-indicator {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .link-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                </div>
+                <h1>IMAGE<span>LINK</span> CONVERTER</h1>
+            </div>
+            <p class="subtitle">Convert images to clickable social media links in 3 simple steps</p>
+        </header>
+        
+        <!-- Steps Indicator -->
+        <div class="steps-indicator">
+            <div class="step-indicator">
+                <div class="step-number active" id="step-1-indicator">1</div>
+                <div class="step-text">Upload Image</div>
+            </div>
+            <div class="step-indicator">
+                <div class="step-number inactive" id="step-2-indicator">2</div>
+                <div class="step-text">Add Destination</div>
+            </div>
+            <div class="step-indicator">
+                <div class="step-number inactive" id="step-3-indicator">3</div>
+                <div class="step-text">Generate Link</div>
+            </div>
+        </div>
+        
+        <!-- Step 1: Upload Image -->
+        <div class="card">
+            <div class="step-content active" id="step-1">
+                <h2>Step 1: Upload Your Image</h2>
+                <div class="form-group">
+                    <label>Choose an image (Recommended: 1200x630 pixels for best Facebook preview)</label>
+                    <div class="file-upload-area" id="upload-area">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Click here or drag & drop your image</div>
+                        <div class="upload-subtext">Supports JPG, PNG, GIF (Max 5MB)</div>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*">
+                </div>
+                
+                <div class="image-preview" id="image-preview">
+                    <img id="preview-img" class="preview-img" alt="Preview">
+                    <div class="image-info" id="image-info"></div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="next-step-1" disabled>
+                        Next: Add Destination URL
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Add Destination URL -->
+            <div class="step-content" id="step-2">
+                <h2>Step 2: Add Destination URL</h2>
+                <div class="form-group">
+                    <label for="destination-url">Where should users go when they click your link?</label>
+                    <input type="url" id="destination-url" placeholder="https://example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="link-title">Title (Optional)</label>
+                    <input type="text" id="link-title" placeholder="Enter a catchy title for your link">
+                </div>
+                
+                <div class="form-group">
+                    <label for="link-description">Description (Optional)</label>
+                    <textarea id="link-description" placeholder="Enter a description that will appear in social media previews" rows="3"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" id="back-step-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Back
+                    </button>
+                    <button id="next-step-2" disabled>
+                        Next: Generate Link
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Generate Link -->
+            <div class="step-content" id="step-3">
+                <h2>Step 3: Your Link is Ready!</h2>
+                
+                <div class="result-section" id="result-section">
+                    <div class="result-card">
+                        <div class="success-icon">✅</div>
+                        <div class="result-title">Link Generated Successfully!</div>
+                        
+                        <div class="link-container">
+                            <input type="text" class="generated-link" id="generated-link" readonly>
+                            <button class="copy-btn" id="copy-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy Link
+                            </button>
+                        </div>
+                        
+                        <div class="preview-section">
+                            <div class="preview-title">📱 Facebook Preview:</div>
+                            <div class="facebook-preview" id="facebook-preview">
+                                <img id="facebook-preview-img" alt="Preview">
+                                <div class="facebook-preview-content">
+                                    <div class="facebook-preview-title" id="facebook-preview-title">Your Link Title</div>
+                                    <div class="facebook-preview-description" id="facebook-preview-description">Your description will appear here</div>
+                                    <div class="facebook-preview-url" id="facebook-preview-url">YOURDOMAIN.COM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" id="back-step-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Back
+                    </button>
+                    <button id="create-another">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Create Another Link
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>🚀 How It Works</h2>
+            <ol>
+                <li><strong>Upload Image:</strong> Select an image that will appear when your link is shared on social media.</li>
+                <li><strong>Add Destination:</strong> Enter the URL where users should go when they click your link.</li>
+                <li><strong>Generate Link:</strong> Get a special link that shows your image preview on Facebook and other platforms.</li>
+                <li><strong>Share & Redirect:</strong> Share the link anywhere - when clicked, users see your image and get redirected to your destination.</li>
+            </ol>
+            
+            <div class="warning">
+                <div class="warning-title">⚠️ Important Note:</div>
+                <p>This is a demo version that works in your browser only. For actual Facebook sharing with image previews, you need to host this on a web server with proper Open Graph meta tags. The generated links in this demo are temporary and work only in this session.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentStep = 1;
+        let selectedFile = null;
+        let imageDataUrl = null;
+        
+        // DOM elements
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const imageInfo = document.getElementById('image-info');
+        const destinationUrl = document.getElementById('destination-url');
+        const linkTitle = document.getElementById('link-title');
+        const linkDescription = document.getElementById('link-description');
+        const generatedLink = document.getElementById('generated-link');
+        const resultSection = document.getElementById('result-section');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateStepIndicators();
+        });
+        
+        function setupEventListeners() {
+            // File upload events
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Navigation events
+            document.getElementById('next-step-1').addEventListener('click', () => goToStep(2));
+            document.getElementById('next-step-2').addEventListener('click', () => goToStep(3));
+            document.getElementById('back-step-2').addEventListener('click', () => goToStep(1));
+            document.getElementById('back-step-3').addEventListener('click', () => goToStep(2));
+            document.getElementById('create-another').addEventListener('click', resetForm);
+            
+            // Form validation events
+            destinationUrl.addEventListener('input', validateStep2);
+            
+            // Copy button event
+            document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+        
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+        
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+        
+        function handleFile(file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+            
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB.');
+                return;
+            }
+            
+            selectedFile = file;
+            
+            // Create file reader
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imageDataUrl = e.target.result;
+                previewImg.src = imageDataUrl;
+                imagePreview.style.display = 'block';
+                
+                // Show file info
+                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                imageInfo.textContent = `✅ ${file.name} (${sizeInMB} MB)`;
+                
+                // Enable next button
+                document.getElementById('next-step-1').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function validateStep2() {
+            const url = destinationUrl.value.trim();
+            const isValid = url && isValidUrl(url);
+            document.getElementById('next-step-2').disabled = !isValid;
+        }
+        
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show current step
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            // Update step indicators
+            currentStep = step;
+            updateStepIndicators();
+            
+            // Generate link if going to step 3
+            if (step === 3) {
+                generateLink();
+            }
+        }
+        
+        function updateStepIndicators() {
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                if (i < currentStep) {
+                    indicator.className = 'step-number completed';
+                    indicator.textContent = '✓';
+                } else if (i === currentStep) {
+                    indicator.className = 'step-number active';
+                    indicator.textContent = i;
+                } else {
+                    indicator.className = 'step-number inactive';
+                    indicator.textContent = i;
+                }
+            }
+        }
+        
+        function generateLink() {
+            // Generate a unique ID (in real implementation, this would be server-generated)
+            const linkId = Math.random().toString(36).substring(2, 15);
+            const fakeLink = `https://yoursite.com/link/${linkId}`;
+            
+            // Store link data in localStorage (for demo purposes)
+            const linkData = {
+                id: linkId,
+                imageDataUrl: imageDataUrl,
+                destinationUrl: destinationUrl.value,
+                title: linkTitle.value || 'Shared Link',
+                description: linkDescription.value || 'Click to visit this awesome link!',
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem(`link_${linkId}`, JSON.stringify(linkData));
+            
+            // Update UI
+            generatedLink.value = fakeLink;
+            resultSection.style.display = 'block';
+            
+            // Update Facebook preview
+            updateFacebookPreview(linkData);
+        }
+        
+        function updateFacebookPreview(linkData) {
+            document.getElementById('facebook-preview-img').src = linkData.imageDataUrl;
+            document.getElementById('facebook-preview-title').textContent = linkData.title;
+            document.getElementById('facebook-preview-description').textContent = linkData.description;
+            
+            try {
+                const url = new URL(linkData.destinationUrl);
+                document.getElementById('facebook-preview-url').textContent = url.hostname.toUpperCase();
+            } catch (e) {
+                document.getElementById('facebook-preview-url').textContent = 'YOURSITE.COM';
+            }
+        }
+        
+        function copyToClipboard() {
+            generatedLink.select();
+            document.execCommand('copy');
+            
+            // Update button text
+            const copyBtn = document.getElementById('copy-btn');
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Copied!
+            `;
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHTML;
+            }, 2000);
+        }
+        
+        function resetForm() {
+            // Reset all form fields
+            fileInput.value = '';
+            destinationUrl.value = '';
+            linkTitle.value = '';
+            linkDescription.value = '';
+            generatedLink.value = '';
+            
+            // Hide previews
+            imagePreview.style.display = 'none';
+            resultSection.style.display = 'none';
+            
+            // Reset variables
+            selectedFile = null;
+            imageDataUrl = null;
+            
+            // Go back to step 1
+            goToStep(1);
+            
+            // Disable buttons
+            document.getElementById('next-step-1').disabled = true;
+            document.getElementById('next-step-2').disabled = true;
+        }
+    </script>
+</body>
+</html>
